@@ -1,4 +1,5 @@
-
+// Rule 07. Exceptional Behavior (ERR)
+// ERR05-J. Do not let checked exceptions escape from a finally block
 
 public class Operation {
   public static void doOperation(String some_file) {
@@ -9,7 +10,11 @@ public class Operation {
       try {
         // Do operations 
       } finally {
-        reader.close();
+        try {
+          reader.close();
+        } catch (IOException ie) {
+          // Forward to handler
+        }
         // ... Other cleanup code ...
       }
     } catch (IOException x) {
