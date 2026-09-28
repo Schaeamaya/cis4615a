@@ -2,7 +2,11 @@
 // OBJ01-J. Compare classes and not class names
 
 public class Widget {
-  public int total; // Number of elements
+  private int total; // Declared private
+
+  public int getTotal () {
+    return total;
+  }
 
   void add() {
     if (total < Integer.MAX_VALUE) {      
