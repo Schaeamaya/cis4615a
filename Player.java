@@ -4,6 +4,11 @@ COP3330 Object - Oriented Programming
 Player.java
 */
 
+/* Rules implemented : 
+    MET00-J - Validate method arguments 
+    NUM00-J - Detect or prevent integer overflow 
+    OBJ01-J - Limit accessibility of fields 
+*/
 public class Player
 {
     // Attributes
@@ -31,6 +36,13 @@ public class Player
     // Sets all variables with given parameters
     public Player(String name, String country, String position, int jerseyNumber, int goalsScored, int assists, int age)
     {
+        // SEI CERT RULE MET00-J: Validate method arguments
+        if (name == null || country == null || position == null) {
+            throw new IllegalArgumentException("String attributes cannot be null.");
+        }
+        if (jerseyNumber < 0 || goalsScored < 0 || assists < 0 || age < 0) {
+            throw new IllegalArgumentException("Numeric attributes cannot be negative.");
+        }
         // Assign each parameter to its corresponding class attribute
         this.name = name;
         this.country = country;
@@ -44,6 +56,13 @@ public class Player
     // Sets name, country, and jersey number
     public Player(String name, String country, int jerseyNumber)
     {
+        // SEI CERT RULE MET00-J: Validate method arguments
+        if (name == null || country == null) {
+            throw new IllegalArgumentException("Name and country cannot be null.");
+        }
+        if (jerseyNumber < 0) {
+            throw new IllegalArgumentException("Jersey number cannot be negative.");
+        }
         // Assign provided values and set defaults for remaining variables
         this.name = name;
         this.country = country;
@@ -68,8 +87,8 @@ public class Player
         if (detailed)
         {
             // Calculates contribution value using goals and assists
-            int contribution = (this.goalsScored * 2) + this.assists;
-
+            // SEI CERT RULE NUM00-J: Detect or prevent integer overflow
+            int contribution = Math.addExact(Math.multiplyExact(this.goalsScored, 2), this.assists);
             // Decides label category based on contribution threshold
             String label = "Developing";
             if (contribution >= 10)
@@ -90,16 +109,21 @@ public class Player
     // Updates goals scored
     public void updateStats(int goals)
     {
-        // Add additional goals to the current total
-        this.goalsScored += goals;
+        if (goals < 0) {
+            throw new IllegalArgumentException("Cannot add negative goals.");
+        }
+        // SEI CERT RULE NUM00-J: Detect or prevent integer overflow
+        this.goalsScored = Math.addExact(this.goalsScored, goals);
     }
 
-    // Updates both goals and assists
     public void updateStats(int goals, int assists)
     {
-        // Add additional goals and assists to current totals
-        this.goalsScored += goals;
-        this.assists += assists;
+        if (goals < 0 || assists < 0) {
+            throw new IllegalArgumentException("Cannot add negative stats.");
+        }
+        // SEI CERT RULE NUM00-J: Detect or prevent integer overflow
+        this.goalsScored = Math.addExact(this.goalsScored, goals);
+        this.assists = Math.addExact(this.assists, assists);
     }
 
     // Converts object data to a formatted string matching the layout guide exactly
@@ -181,7 +205,8 @@ public class Player
         if (roster == null || roster.length == 0) return 0.0;
 
         // Sum the ages of all valid player objects
-        int totalAge = 0;
+        // SEI CERT RULE NUM00-J: Use long to prevent integer overflow when summing arrays
+        long totalAge = 0;
         int count = 0;
         for (Player p : roster)
         {
@@ -200,7 +225,8 @@ public class Player
         if (roster == null || country == null) return 0.0;
 
         // Sum the ages of players matching the specified country case-insensitively
-        int totalAge = 0;
+        // SEI CERT RULE NUM00-J: Use long to prevent integer overflow when summing arrays
+        long totalAge = 0;
         int count = 0;
         for (Player p : roster)
         {
